@@ -54,15 +54,17 @@ def get_screenshot(url):
 	with webdriver.Chrome(path, options=options) as driver:
 		file_name = url_to_filename(url)
 		driver.get(url)
-		page_sizes = lambda X: driver.execute_script('return document.body.parentNode.scroll' + X)
-		driver.set_window_size(1920, page_sizes('Height'))
-
-		driver.get(url)
 		time.sleep(2)
-
+		# page_sizes = lambda X: driver.execute_script('return document.body.parentNode.scroll' + X)
+		# driver.set_window_size(1920, page_sizes('Height'))
+		# page_sizes = driver.execute_script('return document.documentElement.scrollHeight;')
+		page_sizes = driver.execute_script('return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight,document.body.offsetHeight, document.documentElement.offsetHeight,document.body.clientHeight, document.documentElement.clientHeight);')
+		# print('!!!!', page_sizes)
+		driver.set_window_size(1920, int(page_sizes))
 		js_script = "{}.forEach(identifier => [...document.querySelectorAll(identifier)].forEach(ele => ele.style.display = 'none'));".format(collect_hiden_elements())
 		driver.execute_script(js_script)
 
+		# maked_sreen = driver.find_element_by_tag_name('body').screenshot(file_name)
 		maked_sreen = driver.save_screenshot(file_name)
-		print('FIN', maked_sreen)
+		# print('FIN', maked_sreen)
 		return maked_sreen, file_name
